@@ -1,68 +1,48 @@
 #pragma once
 
 #include "common.h"
+#include <filesystem>
+
+using std::filesystem::path;
+
+enum IS_FILE_FOLDER_
+{
+    IS_NONE,
+    IS_FILE,
+    IS_FOLDER
+};
 
 class Global
 {
 private:
-    Global() {}
+    Global();
 
 public:
-    enum IS_FILE_FOLDER_
-    {
-        IS_NONE,
-        IS_FILE,
-        IS_FOLDER
-    };
+
 
     int selected_file_index = -1;
     int selected_history_index = -1;
     int is_file_or_folder = IS_NONE;
+
     char message_buffer[300] = { 0 };
     char path_buffer[300] = { 0 };
     char filter_buffer[100] = ".xls|.xlsx|.doc|.docx";
-    std::vector<std::string> file_list;
-    std::vector<std::string> filtered_file_list;
+
+    path folder_path;
+    path selected_path;
+
+    std::vector<path> file_list;
+    std::vector<path> filtered_file_list;
+    std::vector<std::string_view> filter_list;
 
     Global(const Global& g) = delete;
-    static Global& Self()
-    {
-        static Global g_var;
-        return g_var;
-    }
-
-    static bool IsFileSelected()
-    {
-        if (IsValidPath() && Self().selected_file_index >= 0 && Self().is_file_or_folder == IS_FILE)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    static bool IsFolderSelected()
-    {
-        if (IsValidPath() && Self().selected_file_index >= 0 && Self().is_file_or_folder == IS_FOLDER)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    static bool IsHistorySelected()
-    {
-        if (IsFileSelected() && Self().selected_history_index >= 0)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    static bool IsValidPath()
-    {
-        // TODO
-        return true;
-    }
+    static Global& Self();
+    static bool IsFileSelected();
+    static bool IsFolderSelected();
+    static bool IsHistorySelected();
+    static bool IsValidPath();
+    static void UpdatePath();
+    static void UpdateFilter();
 };
 
 struct HisNode
@@ -86,3 +66,10 @@ public:
     //void Delete();
     //void ClearAll();
 };
+
+bool IsFExist(const path& str);
+bool CreateFolder(const path& str);
+bool DeleteF(const path& str);
+bool CopyFile(const path& src, const path& dst);
+std::vector<path> ReadFolderList(const path& str);
+IS_FILE_FOLDER_ IsDirFile(const path& str);

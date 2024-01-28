@@ -109,8 +109,15 @@ void OperationWindow()
 void FileWindow()
 {
     Begin("File", nullptr, 0);
-    InputTextWithHint(u8"文件路径", "C:\\Users\\Admin\\Desktop", Global::Self().path_buffer, sizeof(Global::Self().path_buffer), 0, nullptr, nullptr);
-    InputTextWithHint(u8"过滤", ".xls|.xlsx|.doc|.docx", Global::Self().filter_buffer, sizeof(Global::Self().filter_buffer), 0, nullptr, nullptr);
+    if (InputTextWithHint(u8"文件路径", "C:\\Users\\Admin\\Desktop", Global::Self().path_buffer, sizeof(Global::Self().path_buffer), ImGuiInputTextFlags_EnterReturnsTrue, nullptr, nullptr))
+    {
+        //TODO Global::UpdatePath();
+    }
+
+    if (InputTextWithHint(u8"过滤", ".xls|.xlsx|.doc|.docx", Global::Self().filter_buffer, sizeof(Global::Self().filter_buffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank, nullptr, nullptr))
+    {
+        Global::UpdateFilter();
+    }
 
     BeginChild("FileList", ImVec2(-1, -1), ImGuiChildFlags_Border, 0);
     for (int n = 0; n < 5; n++)
