@@ -8,7 +8,8 @@ History::History(path _path_)
     backup_path = path(path_.string() + ".history");
     backup_info_path = backup_path / "info.txt";
     Load();
-    std::sort(info.begin(), info.end(), [](HisNode& a, HisNode& b) { return a.time < b.time; });
+    std::sort(info.begin(), info.end(), [](HisNode &a, HisNode &b)
+              { return a.time < b.time; });
 }
 
 History::History()
@@ -60,9 +61,9 @@ void History::Load()
     f.close();
 }
 
-path History::GetBackupFileName(const HisNode& node)
+path History::GetBackupFileName(const HisNode &node)
 {
-    return path(backup_path.string() + "\\" + path_.filename().string() + "." + std::to_string(node.time%10000) + "." + node.hash.substr(0, 4) + ".history");
+    return path(backup_path.string() + "\\" + path_.filename().string() + "." + std::to_string(node.time % 10000) + "." + node.hash.substr(0, 4) + ".history");
 }
 
 void History::Add()
@@ -95,7 +96,7 @@ void History::Delete(int i)
         ClearAll();
         return;
     }
-    auto & it = info.begin() + i;
+    auto &it = info.begin() + i;
     path del_path = GetBackupFileName(info[i]);
     DeleteF(del_path);
     info.erase(it);

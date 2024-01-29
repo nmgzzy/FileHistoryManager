@@ -17,7 +17,15 @@ static void OperationWindowClearModule(bool recursive)
         }
         else
         {
-            // todo
+            if (ShowMessageBoxWithButton(u8"确定清空无效历史？"))
+            {
+                DeleteBackup("todo", true, recursive);
+                SDL_Log("Clear Useless, recursive:%d", recursive);
+            }
+            else
+            {
+                SDL_Log("Not Clear Useless, recursive:%d", recursive);
+            }
         }
     }
 
@@ -30,7 +38,16 @@ static void OperationWindowClearModule(bool recursive)
         }
         else
         {
-            // todo
+            if (ShowMessageBoxWithButton(u8"确定清空全部历史？"))
+            {
+                DeleteBackup("todo", false, recursive);
+                SDL_Log("Clear Useless, recursive:%d", recursive);
+                SDL_Log("Clear All, recursive:%d", recursive);
+            }
+            else
+            {
+                SDL_Log("Not Clear All, recursive:%d", recursive);
+            }
         }
     }
 }
@@ -40,49 +57,50 @@ static void OperationWindow()
     Begin("Operation", nullptr, 0);
     SeparatorText(u8"文件操作");
     Spacing();
-
-    InputTextWithHint(u8"备注", u8"表1增加xxx，表2修改xxx", Global::Self().message_buffer, sizeof(Global::Self().message_buffer), 0, nullptr, nullptr);
-
-    if (Button(u8"备份", ImVec2(-1, 0)))
     {
-        SDL_Log("Backup Button");
-        if (!Global::Self().IsFileSelected())
-        {
-            ShowMessageBox(u8"请先选择一个文件！");
-        }
-        else if (strlen(Global::Self().message_buffer) == 0)
-        {
-            ShowMessageBox(u8"备注信息不能为空！");
-        }
-        else
-        {
-            Global::Self().selected_history.Add();
-        }
-    }
+        InputTextWithHint(u8"备注", u8"表1增加xxx，表2修改xxx", Global::Self().message_buffer, sizeof(Global::Self().message_buffer), 0, nullptr, nullptr);
 
-    if (Button(u8"删除历史节点", ImVec2(-1, 0)))
-    {
-        SDL_Log("Delete One Node Button");
-        if (!Global::Self().IsHistorySelected())
+        if (Button(u8"备份", ImVec2(-1, 0)))
         {
-            ShowMessageBox(u8"请先选择一个文件历史！");
+            SDL_Log("Backup Button");
+            if (!Global::Self().IsFileSelected())
+            {
+                ShowMessageBox(u8"请先选择一个文件！");
+            }
+            else if (strlen(Global::Self().message_buffer) == 0)
+            {
+                ShowMessageBox(u8"备注信息不能为空！");
+            }
+            else
+            {
+                Global::Self().selected_history.Add();
+            }
         }
-        else
-        {
-            Global::Self().selected_history.Delete(Global::Self().get_selected_history_index());
-        }
-    }
 
-    if (Button(u8"清空文件历史", ImVec2(-1, 0)))
-    {
-        SDL_Log("Delete All Node Button");
-        if (!Global::Self().IsFileSelected())
+        if (Button(u8"删除历史节点", ImVec2(-1, 0)))
         {
-            ShowMessageBox(u8"请先选择一个文件！");
+            SDL_Log("Delete One Node Button");
+            if (!Global::Self().IsHistorySelected())
+            {
+                ShowMessageBox(u8"请先选择一个文件历史！");
+            }
+            else
+            {
+                Global::Self().selected_history.Delete(Global::Self().get_selected_history_index());
+            }
         }
-        else
+
+        if (Button(u8"清空文件历史", ImVec2(-1, 0)))
         {
-            Global::Self().selected_history.ClearAll();
+            SDL_Log("Delete All Node Button");
+            if (!Global::Self().IsFileSelected())
+            {
+                ShowMessageBox(u8"请先选择一个文件！");
+            }
+            else
+            {
+                Global::Self().selected_history.ClearAll();
+            }
         }
     }
 

@@ -56,6 +56,10 @@ void ReadFList(const path &path_, std::vector<path> &output, bool recursive)
     }
 }
 
+void DeleteBackup(const path &path_, bool only_useless, bool recursive)
+{
+}
+
 std::vector<std::string_view> splitSV(std::string_view strv, std::string_view delims)
 {
     std::vector<std::string_view> output;
@@ -106,4 +110,31 @@ void ShowMessageBox(const char *msg)
 {
     extern SDL_Window *g_window;
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, u8"注意", msg, g_window);
+}
+
+int ShowMessageBoxWithButton(const char *msg)
+{
+    extern SDL_Window *g_window;
+
+    SDL_MessageBoxButtonData buttons[2] = {
+        {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
+         0,
+         u8"取消"},
+        {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+         1,
+         u8"好的"}};
+
+    SDL_MessageBoxData msgboxdata = {
+        SDL_MESSAGEBOX_INFORMATION,
+        g_window,
+        u8"注意",
+        msg,
+        2,
+        buttons,
+        NULL};
+    int btn_id = 0;
+
+    SDL_ShowMessageBox(&msgboxdata, &btn_id);
+
+    return btn_id;
 }

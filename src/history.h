@@ -17,10 +17,10 @@ private:
     path path_;
     path backup_path;
     path backup_info_path;
-    
+
     void Save();
     void Load();
-    path GetBackupFileName(const HisNode& hash);
+    path GetBackupFileName(const HisNode &hash);
 
 public:
     std::vector<HisNode> info;
