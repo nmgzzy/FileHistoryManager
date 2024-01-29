@@ -1,6 +1,4 @@
-#include "global.h"
-#include <algorithm>
-#include <string.h>
+﻿#include "global.h"
 
 Global::Global()
 {
@@ -58,7 +56,7 @@ void Global::UpdatePath()
     using namespace std::filesystem;
     bool flag_select = false;
     path temp_path = u8path(Self().path_buffer);
-    if (temp_path.empty() || !IsFExist(temp_path))
+    if (temp_path.empty() || !exists(temp_path))
     {
         goto _Error;
     }
@@ -100,27 +98,6 @@ void Global::UpdatePath(const char *u8str)
 {
     strcpy_s(Self().path_buffer, sizeof(Self().path_buffer), u8str);
     UpdatePath();
-}
-
-static std::vector<std::string_view> splitSV(std::string_view strv, std::string_view delims = " ")
-{
-    std::vector<std::string_view> output;
-    size_t first = 0;
-
-    while (first < strv.size())
-    {
-        const auto second = strv.find_first_of(delims, first);
-
-        if (first != second)
-            output.emplace_back(strv.substr(first, second - first));
-
-        if (second == std::string_view::npos)
-            break;
-
-        first = second + 1;
-    }
-
-    return output;
 }
 
 void Global::UpdateFilter()

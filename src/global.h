@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "common.h"
 #include "util.h"
+#include "history.h"
 
 class Global
 {
@@ -17,6 +18,7 @@ public:
 
     path folder_path;
     path selected_path;
+    History selected_history;
 
     std::vector<path> file_list;
     std::vector<path> filtered_file_list;
@@ -30,10 +32,12 @@ public:
         if (i < 0 || i >= filtered_file_list.size())
         {
             selected_path = path();
+            selected_history = History();
         }
         else
         {
             selected_path = filtered_file_list[i];
+            selected_history = History(filtered_file_list[i]);
         }
     }
 

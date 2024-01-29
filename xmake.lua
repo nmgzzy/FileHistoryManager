@@ -1,7 +1,7 @@
 add_rules("mode.debug", "mode.release")
 set_languages("c11", "c++17")
-
 add_requires("libsdl")
+
 
 target("imgui")
     set_kind("static")
@@ -15,6 +15,13 @@ target("imgui")
     add_files("third_party/imgui/backends/imgui_impl_sdlrenderer2.cpp", "third_party/imgui/backends/imgui_impl_sdl2.cpp")
     add_packages("libsdl")
 
+
+target("md5")
+    set_kind("static")
+    add_includedirs("third_party/md5")
+    add_files("third_party/md5/*.cpp")
+
+
 target("FileHistoryManager")
     set_kind("binary")
     if is_mode("debug") then 
@@ -22,7 +29,7 @@ target("FileHistoryManager")
     end
 
     add_packages("libsdl")
-    add_deps("imgui")
+    add_deps("imgui", "md5")
 
     add_includedirs("src")
     add_includedirs("third_party/imgui", "third_party/imgui/backends")

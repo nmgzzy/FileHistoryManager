@@ -6,3 +6,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <filesystem>
+#include <algorithm>
+#include <string.h>
+
+using std::filesystem::path;

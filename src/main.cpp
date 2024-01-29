@@ -20,6 +20,8 @@
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
 
+SDL_Window* g_window;
+
 // Main code
 int main(int, char **)
 {
@@ -44,18 +46,19 @@ int main(int, char **)
 
     // Create window with SDL_Renderer graphics context
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    SDL_Window *window = SDL_CreateWindow(u8"File History Manager", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
-    if (window == nullptr)
+    g_window = SDL_CreateWindow(u8"File History Manager", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    if (g_window == nullptr)
     {
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
         return -1;
     }
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    SDL_Renderer *renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr)
     {
         SDL_Log("Error creating SDL_Renderer!");
         return 0;
     }
+
     // SDL_RendererInfo info;
     // SDL_GetRendererInfo(renderer, &info);
     // SDL_Log("Current SDL_Renderer: %s", info.name);
@@ -73,14 +76,14 @@ int main(int, char **)
     ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDL2_InitForSDLRenderer(g_window, renderer);
     ImGui_ImplSDLRenderer2_Init(renderer);
 
     // Load Fonts
     ImFontConfig config;
     config.MergeMode = true;
-    io.Fonts->AddFontFromFileTTF("res/DroidSans.ttf", 20);
-    ImFont *font = io.Fonts->AddFontFromFileTTF("res/DroidSansFallback.ttf", 20, &config, io.Fonts->GetGlyphRangesChineseFull());
+    io.Fonts->AddFontFromFileTTF("res/DroidSans.ttf", 18);
+    ImFont *font = io.Fonts->AddFontFromFileTTF("res/DroidSansFallback.ttf", 18, &config, io.Fonts->GetGlyphRangesChineseFull());
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -109,7 +112,7 @@ int main(int, char **)
             ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT)
                 done = true;
-            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(g_window))
                 done = true;
             if (event.type == SDL_DROPFILE)
             {
@@ -148,7 +151,7 @@ int main(int, char **)
     ImGui::DestroyContext();
 
     SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(g_window);
     SDL_Quit();
 
     return 0;

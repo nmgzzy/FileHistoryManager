@@ -3,6 +3,38 @@
 
 using namespace ImGui;
 
+static void OperationWindowClearModule(bool recursive)
+{
+    std::string lab1 = std::string(u8"清空无效历史") + (recursive ? u8"##1" : u8"##2");
+    std::string lab2 = std::string(u8"清空所有历史") + (recursive ? u8"##1" : u8"##2");
+
+    if (Button(lab1.c_str(), ImVec2(-1, 0)))
+    {
+        SDL_Log("Current Dir Clear Useless Button");
+        if (!Global::Self().IsFolderSelected())
+        {
+            ShowMessageBox(u8"请先选择一个文件夹！");
+        }
+        else
+        {
+            // todo
+        }
+    }
+
+    if (Button(lab2.c_str(), ImVec2(-1, 0)))
+    {
+        SDL_Log("Current Dir Clear All Button");
+        if (!Global::Self().IsFolderSelected())
+        {
+            ShowMessageBox(u8"请先选择一个文件夹！");
+        }
+        else
+        {
+            // todo
+        }
+    }
+}
+
 static void OperationWindow()
 {
     Begin("Operation", nullptr, 0);
@@ -11,97 +43,60 @@ static void OperationWindow()
 
     InputTextWithHint(u8"备注", u8"表1增加xxx，表2修改xxx", Global::Self().message_buffer, sizeof(Global::Self().message_buffer), 0, nullptr, nullptr);
 
-    if (Global::Self().IsFileSelected())
+    if (Button(u8"备份", ImVec2(-1, 0)))
     {
-        if (Button(u8"备份", ImVec2(-1, 0)))
+        SDL_Log("Backup Button");
+        if (!Global::Self().IsFileSelected())
         {
-            SDL_Log("Backup Button");
+            ShowMessageBox(u8"请先选择一个文件！");
         }
-    }
-    else
-    {
-        Button(u8"[选择一个文件]", ImVec2(-1, 0));
+        else if (strlen(Global::Self().message_buffer) == 0)
+        {
+            ShowMessageBox(u8"备注信息不能为空！");
+        }
+        else
+        {
+            Global::Self().selected_history.Add();
+        }
     }
 
-    if (Global::Self().IsHistorySelected())
+    if (Button(u8"删除历史节点", ImVec2(-1, 0)))
     {
-        if (Button(u8"删除历史节点", ImVec2(-1, 0)))
+        SDL_Log("Delete One Node Button");
+        if (!Global::Self().IsHistorySelected())
         {
-            SDL_Log("Delete One Node Button");
+            ShowMessageBox(u8"请先选择一个文件历史！");
         }
-    }
-    else
-    {
-        Button(u8"[选择一个文件历史]", ImVec2(-1, 0));
+        else
+        {
+            Global::Self().selected_history.Delete(Global::Self().get_selected_history_index());
+        }
     }
 
-    if (Global::Self().IsFileSelected())
+    if (Button(u8"清空文件历史", ImVec2(-1, 0)))
     {
-        if (Button(u8"清空文件历史", ImVec2(-1, 0)))
+        SDL_Log("Delete All Node Button");
+        if (!Global::Self().IsFileSelected())
         {
-            SDL_Log("Delete All Node Button");
+            ShowMessageBox(u8"请先选择一个文件！");
         }
-    }
-    else
-    {
-        Button(u8"[选择一个文件]", ImVec2(-1, 0));
+        else
+        {
+            Global::Self().selected_history.ClearAll();
+        }
     }
 
     Spacing();
     SeparatorText(u8"当前文件夹操作");
     Spacing();
 
-    if (Global::Self().IsFolderSelected())
-    {
-        if (Button(u8"清空无效历史", ImVec2(-1, 0)))
-        {
-            SDL_Log("Current Dir Clear Useless Button");
-        }
-    }
-    else
-    {
-        Button(u8"[选择一个文件夹]", ImVec2(-1, 0));
-    }
-
-    if (Global::Self().IsFolderSelected())
-    {
-        if (Button(u8"清空所有历史", ImVec2(-1, 0)))
-        {
-            SDL_Log("Current Dir Clear All Button");
-        }
-    }
-    else
-    {
-        Button(u8"[选择一个文件夹]", ImVec2(-1, 0));
-    }
+    OperationWindowClearModule(false);
 
     Spacing();
     SeparatorText(u8"当前文件夹和子文件夹操作");
     Spacing();
 
-    if (Global::Self().IsFolderSelected())
-    {
-        if (Button(u8"清空无效历史", ImVec2(-1, 0)))
-        {
-            SDL_Log("Clear Useless Button");
-        }
-    }
-    else
-    {
-        Button(u8"[选择一个文件夹]", ImVec2(-1, 0));
-    }
-
-    if (Global::Self().IsFolderSelected())
-    {
-        if (Button(u8"清空所有历史", ImVec2(-1, 0)))
-        {
-            SDL_Log("Clear All Button");
-        }
-    }
-    else
-    {
-        Button(u8"[选择一个文件夹]", ImVec2(-1, 0));
-    }
+    OperationWindowClearModule(true);
 
     End();
 }
@@ -122,7 +117,7 @@ static void FileWindow()
     BeginChild("FileList", ImVec2(-1, -1), ImGuiChildFlags_Border, 0);
     for (int i = 0; i < Global::Self().filtered_file_list.size(); i++)
     {
-        const path& item = Global::Self().filtered_file_list[i];
+        const path &item = Global::Self().filtered_file_list[i];
         if (Selectable(item.filename().u8string().c_str(), Global::Self().get_selected_file_index() == i))
         {
             Global::Self().set_selected_file_index(i);
@@ -137,45 +132,41 @@ static void HistoryWindow()
 {
     Begin("History", nullptr, 0);
 
-    if (1)
-    {
-        Text(u8"文件名：");
-        Text(u8"历史备份：");
-        Spacing();
+    Text(u8"文件名：");
+    SameLine();
+    Text(Global::Self().selected_path.u8string().c_str());
+    SeparatorText(u8"历史备份");
+    Spacing();
 
-        ImGui::Columns(4, "mycolumns"); // 4-ways, with border
-        ImGui::Separator();
-        ImGui::Text(u8"时间");
-        ImGui::NextColumn();
-        ImGui::Text(u8"名称");
-        ImGui::NextColumn();
-        ImGui::Text(u8"备注");
-        ImGui::NextColumn();
-        ImGui::Text(u8"校验");
-        ImGui::NextColumn();
-        ImGui::Separator();
-        const char *names[3] = {"One", "Two", "Three"};
-        const char *paths[3] = {"/path/one", "/path/two", "/path/three"};
-        for (int i = 0; i < 3; i++) // row
+    ImGui::Columns(4, "mycolumns"); // 4-ways, with border
+    ImGui::Separator();
+    ImGui::Text(u8"时间");
+    ImGui::NextColumn();
+    ImGui::Text(u8"名称");
+    ImGui::NextColumn();
+    ImGui::Text(u8"备注");
+    ImGui::NextColumn();
+    ImGui::Text(u8"校验");
+    ImGui::NextColumn();
+    ImGui::Separator();
+    const auto &info = Global::Self().selected_history.info;
+    for (int i = 0; i < info.size(); i++) // row
+    {
+        if (ImGui::Selectable(info[i].time_s.c_str(), Global::Self().get_selected_history_index() == i, ImGuiSelectableFlags_SpanAllColumns))
         {
-            char label[32];
-            sprintf(label, "%04d", i);
-            if (ImGui::Selectable(label, Global::Self().get_selected_history_index() == i, ImGuiSelectableFlags_SpanAllColumns))
-            {
-                Global::Self().set_selected_history_index(i);
-            }
-            bool hovered = ImGui::IsItemHovered();
-            ImGui::NextColumn();
-            ImGui::Text(names[i]);
-            ImGui::NextColumn();
-            ImGui::Text(paths[i]);
-            ImGui::NextColumn();
-            ImGui::Text(paths[i]);
-            ImGui::NextColumn();
+            Global::Self().set_selected_history_index(i);
         }
-        ImGui::Columns(1);
-        ImGui::Separator();
+        bool hovered = ImGui::IsItemHovered();
+        ImGui::NextColumn();
+        ImGui::Text(info[i].name.c_str());
+        ImGui::NextColumn();
+        ImGui::Text(info[i].message.c_str());
+        ImGui::NextColumn();
+        ImGui::Text(info[i].hash.c_str());
+        ImGui::NextColumn();
     }
+    ImGui::Columns(1);
+    ImGui::Separator();
 
     End();
 }
