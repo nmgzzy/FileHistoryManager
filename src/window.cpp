@@ -1,5 +1,5 @@
 ﻿#include "window.h"
-#include "util.h"
+#include "global.h"
 
 using namespace ImGui;
 

@@ -14,7 +14,7 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 #include "window.h"
-#include "util.h"
+#include "global.h"
 
 #if !SDL_VERSION_ATLEAST(2, 0, 17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
@@ -87,7 +87,7 @@ int main(int, char **)
 
     // setup style
     {
-        ImGuiStyle& style = ImGui::GetStyle();
+        ImGuiStyle &style = ImGui::GetStyle();
         style.GrabRounding = style.FrameRounding = 10.f;
         style.WindowPadding = ImVec2(10.f, 10.f);
         style.FramePadding = ImVec2(5.f, 5.f);
