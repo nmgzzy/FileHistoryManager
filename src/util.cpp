@@ -27,20 +27,27 @@ bool CopyFile(const path &src, const path &dst)
     return ret;
 }
 
-void ReadFList(const path &path_, std::vector<path> &output, bool recursive)
+bool ReadFList(const path &path_, std::vector<path> &output, bool recursive, bool dir, bool file)
 {
     using namespace std;
     using namespace std::filesystem;
 
+    int cnt = 0;
     output.clear();
 
     if (recursive)
     {
         for (auto const &dir_entry : recursive_directory_iterator{path_})
         {
-            if (dir_entry.is_directory() || dir_entry.is_regular_file())
+            if (dir && dir_entry.is_directory() || file && dir_entry.is_regular_file())
             {
                 output.emplace_back(dir_entry.path());
+                cnt++;
+            }
+            if (cnt > 10000)
+            {
+                ShowMessageBox(u8"Error：文件数目过多！");
+                return false;
             }
         }
     }
@@ -54,10 +61,39 @@ void ReadFList(const path &path_, std::vector<path> &output, bool recursive)
             }
         }
     }
+    return true;
+}
+
+static bool endsWith(const std::string& str, const std::string suffix = ".history")
+{
+    if (suffix.length() > str.length()) { return false; }
+    return (str.rfind(suffix) == (str.length() - suffix.length()));
 }
 
 void DeleteBackup(const path &path_, bool only_useless, bool recursive)
 {
+    using namespace std::filesystem;
+    if (!is_directory(path_))
+    {
+        return;
+    }
+    std::vector<path> list;
+    if (!ReadFList(path_, list, recursive, true, false))
+    {
+        return;
+    }
+    for (const auto& i : list)
+    {
+        if (endsWith(i.u8string()))
+        {
+            std::string temp_s = i.string();
+            path temp_p = path(temp_s.substr(0, temp_s.length() - 8));
+            if (!only_useless || !exists(temp_p))
+            {
+                DeleteF(i);
+            }
+        }
+    }
 }
 
 std::vector<std::string_view> splitSV(std::string_view strv, std::string_view delims)

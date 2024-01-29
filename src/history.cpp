@@ -42,7 +42,7 @@ void History::Load()
 
     ifstream f(backup_info_path);
 
-    while (f.peek() == EOF)
+    while (f.peek() != EOF)
     {
         char bufLine[200] = {0};
         f.getline(bufLine, 200);

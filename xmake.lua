@@ -38,6 +38,9 @@ target("FileHistoryManager")
 
     after_build(function (target)
                     os.cp("$(projectdir)/res/font/*.ttf", target:targetdir() .. "/res/")
+                    if is_mode("release") then 
+                        os.cp("$(projectdir)/res/ini/*.ini", target:targetdir())
+                    end
                 end
     )
     

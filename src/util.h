@@ -5,7 +5,7 @@
 bool CreateFolder(const path &path_);
 bool DeleteF(const path &path_);
 bool CopyFile(const path &src, const path &dst);
-void ReadFList(const path &path_, std::vector<path> &output, bool recursive);
+bool ReadFList(const path &path_, std::vector<path> &output, bool recursive, bool dir = true, bool file = true);
 
 void DeleteBackup(const path &path_, bool only_useless, bool recursive);
 

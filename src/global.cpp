@@ -51,11 +51,25 @@ static void UpdateFilteredFileList(const std::vector<path> &input, const std::ve
     }
 }
 
+static std::string& trim(std::string& s)
+{
+    if (s.empty())
+    {
+        return s;
+    }
+
+    s.erase(0, s.find_first_not_of(" "));
+    s.erase(s.find_last_not_of(" ") + 1);
+    return s;
+}
+
 void Global::UpdatePath()
 {
+    using namespace std;
     using namespace std::filesystem;
     bool flag_select = false;
-    path temp_path = u8path(Self().path_buffer);
+    string s_trim = trim(string(Self().path_buffer));
+    path temp_path = u8path(s_trim);
     if (temp_path.empty() || !exists(temp_path))
     {
         goto _Error;

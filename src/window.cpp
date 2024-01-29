@@ -19,7 +19,7 @@ static void OperationWindowClearModule(bool recursive)
         {
             if (ShowMessageBoxWithButton(u8"确定清空无效历史？"))
             {
-                DeleteBackup("todo", true, recursive);
+                DeleteBackup(Global::Self().folder_path.string().c_str(), true, recursive);
                 SDL_Log("Clear Useless, recursive:%d", recursive);
             }
             else
@@ -40,7 +40,7 @@ static void OperationWindowClearModule(bool recursive)
         {
             if (ShowMessageBoxWithButton(u8"确定清空全部历史？"))
             {
-                DeleteBackup("todo", false, recursive);
+                DeleteBackup(Global::Self().folder_path.string().c_str(), false, recursive);
                 SDL_Log("Clear Useless, recursive:%d", recursive);
                 SDL_Log("Clear All, recursive:%d", recursive);
             }
@@ -74,6 +74,7 @@ static void OperationWindow()
             else
             {
                 Global::Self().selected_history.Add();
+                Global::Self().message_buffer[0] = 0;
             }
         }
 
@@ -100,6 +101,19 @@ static void OperationWindow()
             else
             {
                 Global::Self().selected_history.ClearAll();
+            }
+        }
+
+        if (Button(u8"恢复文件历史", ImVec2(-1, 0)))
+        {
+            SDL_Log("Recover Node Button");
+            if (!Global::Self().IsHistorySelected())
+            {
+                ShowMessageBox(u8"请先选择一个文件历史！");
+            }
+            else
+            {
+                // todo
             }
         }
     }
