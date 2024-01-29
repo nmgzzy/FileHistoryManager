@@ -44,7 +44,7 @@ int main(int, char **)
 
     // Create window with SDL_Renderer graphics context
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    SDL_Window *window = SDL_CreateWindow(u8"亲亲老婆的File History Manager", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    SDL_Window *window = SDL_CreateWindow(u8"File History Manager", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
     if (window == nullptr)
     {
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
@@ -113,7 +113,8 @@ int main(int, char **)
                 done = true;
             if (event.type == SDL_DROPFILE)
             {
-                SDL_Log("test drop: %s", event.drop.file);
+                SDL_Log("main: drop: %s", event.drop.file);
+                Global::UpdatePath(event.drop.file);
             }
         }
 

@@ -3,7 +3,7 @@
 
 using namespace ImGui;
 
-void OperationWindow()
+static void OperationWindow()
 {
     Begin("Operation", nullptr, 0);
     SeparatorText(u8"文件操作");
@@ -106,34 +106,34 @@ void OperationWindow()
     End();
 }
 
-void FileWindow()
+static void FileWindow()
 {
     Begin("File", nullptr, 0);
-    if (InputTextWithHint(u8"文件路径", "C:\\Users\\Admin\\Desktop", Global::Self().path_buffer, sizeof(Global::Self().path_buffer), ImGuiInputTextFlags_EnterReturnsTrue, nullptr, nullptr))
+    if (InputTextWithHint(u8"文件路径", "C:\\Users\\Admin\\Desktop", Global::Self().path_buffer, sizeof(Global::Self().path_buffer), ImGuiInputTextFlags_None, nullptr, nullptr))
     {
-        //TODO Global::UpdatePath();
+        Global::UpdatePath();
     }
 
-    if (InputTextWithHint(u8"过滤", ".xls|.xlsx|.doc|.docx", Global::Self().filter_buffer, sizeof(Global::Self().filter_buffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank, nullptr, nullptr))
+    if (InputTextWithHint(u8"过滤", ".xls|.xlsx|.doc|.docx", Global::Self().filter_buffer, sizeof(Global::Self().filter_buffer), ImGuiInputTextFlags_CharsNoBlank, nullptr, nullptr))
     {
         Global::UpdateFilter();
     }
 
     BeginChild("FileList", ImVec2(-1, -1), ImGuiChildFlags_Border, 0);
-    for (int n = 0; n < 5; n++)
+    for (int i = 0; i < Global::Self().filtered_file_list.size(); i++)
     {
-        char buf[32];
-        sprintf(buf, "Object %d", n);
-        if (Selectable(buf, Global::Self().selected_file_index == n))
-            Global::Self().selected_file_index = n;
-        // TODO: file or folder?
+        const path& item = Global::Self().filtered_file_list[i];
+        if (Selectable(item.filename().u8string().c_str(), Global::Self().get_selected_file_index() == i))
+        {
+            Global::Self().set_selected_file_index(i);
+        }
     }
     EndChild();
 
     End();
 }
 
-void HistoryWindow()
+static void HistoryWindow()
 {
     Begin("History", nullptr, 0);
 
@@ -160,8 +160,10 @@ void HistoryWindow()
         {
             char label[32];
             sprintf(label, "%04d", i);
-            if (ImGui::Selectable(label, Global::Self().selected_history_index == i, ImGuiSelectableFlags_SpanAllColumns))
-                Global::Self().selected_history_index = i;
+            if (ImGui::Selectable(label, Global::Self().get_selected_history_index() == i, ImGuiSelectableFlags_SpanAllColumns))
+            {
+                Global::Self().set_selected_history_index(i);
+            }
             bool hovered = ImGui::IsItemHovered();
             ImGui::NextColumn();
             ImGui::Text(names[i]);
