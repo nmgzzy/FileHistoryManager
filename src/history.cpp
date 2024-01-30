@@ -9,7 +9,7 @@ History::History(path _path_)
     backup_info_path = backup_path / "info.txt";
     Load();
     std::sort(info.begin(), info.end(), [](HisNode &a, HisNode &b)
-              { return a.time < b.time; });
+              { return a.time > b.time; });
 }
 
 History::History()
@@ -29,7 +29,7 @@ void History::Save()
           << i.time_s << "|"
           << i.name << "|"
           << i.message << "|"
-          << i.hash << "\n";
+          << i.hash << std::endl;
     }
     f.close();
 }
@@ -63,10 +63,25 @@ void History::Load()
 
 path History::GetBackupFileName(const HisNode &node)
 {
-    return path(backup_path.string() + "\\" + path_.filename().string() + "." + std::to_string(node.time % 10000) + "." + node.hash.substr(0, 4) + ".history");
+    char buff[300] = {0};
+    sprintf_s(buff, sizeof(buff),
+              u8"%s\\%s.%04x.%s.history",
+              backup_path.u8string().c_str(),
+              path_.filename().u8string().c_str(),
+              (int)(node.time % 0x10000),
+              node.hash.substr(0, 4).c_str());
+
+    return std::filesystem::u8path(buff);
 }
 
+#ifdef _WINDOW_APP_
 void History::Add()
+{
+    Add(std::string(Global::Self().message_buffer));
+}
+#endif
+
+void History::Add(std::string msg)
 {
     HisNode node;
 
@@ -75,7 +90,7 @@ void History::Add()
 
     node.time = GetTimeNow();
     node.time_s = GetTime(node.time);
-    node.message = std::string(Global::Self().message_buffer);
+    node.message = msg;
     node.hash = GetMd5(path_);
     path backup_file = GetBackupFileName(node);
     node.name = backup_file.filename().u8string();

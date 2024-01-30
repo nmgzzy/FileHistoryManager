@@ -8,10 +8,13 @@
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
 
+#ifndef MY_DEBUG
+#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+#endif
 SDL_Window *g_window;
 
 // Main code
-int main(int, char **)
+int main(int argc, char **argv)
 {
 #ifdef MY_DEBUG
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
@@ -20,10 +23,16 @@ int main(int, char **)
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_CRITICAL);
 #endif
 
+    SDL_Log("argc:%d", argc);
+    for (int i = 0; i < argc; i++)
+    {
+        SDL_Log("arg%d:%s", i, argv[i]);
+    }
+
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
-        printf("Error: %s\n", SDL_GetError());
+        SDL_Log("Error: %s", SDL_GetError());
         return -1;
     }
 
@@ -37,7 +46,7 @@ int main(int, char **)
     g_window = SDL_CreateWindow(u8"File History Manager", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
     if (g_window == nullptr)
     {
-        printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
+        SDL_Log("Error: SDL_CreateWindow(): %s", SDL_GetError());
         return -1;
     }
     SDL_Renderer *renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);

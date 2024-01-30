@@ -113,7 +113,10 @@ static void OperationWindow()
             }
             else
             {
-                // todo
+                char buf[200] = { 0 };
+                sprintf_s(buf, sizeof(buf), u8"还没有实现该功能呢，\n到history文件夹下拷贝\n[%s]\n文件吧 ^v^", 
+                    Global::Self().selected_history.info[Global::Self().get_selected_history_index()].name.c_str());
+                ShowMessageBox(buf);
             }
         }
     }
@@ -147,12 +150,42 @@ static void FileWindow()
     }
 
     BeginChild("FileList", ImVec2(-1, -1), ImGuiChildFlags_Border, 0);
+
+    if (!Global::Self().folder_path.empty())
+    {
+        if (Selectable("../", false, ImGuiSelectableFlags_AllowDoubleClick))
+        {
+            if (ImGui::IsMouseDoubleClicked(0))
+            {
+                Global::UpdatePath(Global::Self().folder_path.parent_path().u8string().c_str());
+            }
+        }
+    }
+
     for (int i = 0; i < Global::Self().filtered_file_list.size(); i++)
     {
+        int dir_flag = ImGuiSelectableFlags_None;
         const path &item = Global::Self().filtered_file_list[i];
-        if (Selectable(item.filename().u8string().c_str(), Global::Self().get_selected_file_index() == i))
+        std::string show_name = item.filename().u8string();
+        if (std::filesystem::is_directory(item))
         {
-            Global::Self().set_selected_file_index(i);
+            show_name += "/";
+            dir_flag = ImGuiSelectableFlags_AllowDoubleClick;
+        }
+        if (Selectable(show_name.c_str(), Global::Self().get_selected_file_index() == i, dir_flag))
+        {
+            if (dir_flag == ImGuiSelectableFlags_AllowDoubleClick)
+            {
+                if (ImGui::IsMouseDoubleClicked(0))
+                {
+                    Global::Self().set_selected_file_index(i);
+                    Global::UpdatePath(item.u8string().c_str());
+                }
+            }
+            else
+            {
+                Global::Self().set_selected_file_index(i);
+            }
         }
     }
     EndChild();

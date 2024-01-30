@@ -14,5 +14,7 @@ std::vector<std::string_view> splitSV(std::string_view strv, std::string_view de
 long long GetTimeNow();
 std::string GetTime(long long time = 0);
 std::string GetMd5(const path &p);
+#ifdef _WINDOW_APP_
 void ShowMessageBox(const char *msg);
 int ShowMessageBoxWithButton(const char *msg);
+#endif

@@ -46,7 +46,9 @@ bool ReadFList(const path &path_, std::vector<path> &output, bool recursive, boo
             }
             if (cnt > 10000)
             {
+#ifdef _WINDOW_APP_
                 ShowMessageBox(u8"Error：文件数目过多！");
+#endif
                 return false;
             }
         }
@@ -64,9 +66,12 @@ bool ReadFList(const path &path_, std::vector<path> &output, bool recursive, boo
     return true;
 }
 
-static bool endsWith(const std::string& str, const std::string suffix = ".history")
+static bool endsWith(const std::string &str, const std::string suffix = ".history")
 {
-    if (suffix.length() > str.length()) { return false; }
+    if (suffix.length() > str.length())
+    {
+        return false;
+    }
     return (str.rfind(suffix) == (str.length() - suffix.length()));
 }
 
@@ -82,7 +87,7 @@ void DeleteBackup(const path &path_, bool only_useless, bool recursive)
     {
         return;
     }
-    for (const auto& i : list)
+    for (const auto &i : list)
     {
         if (endsWith(i.u8string()))
         {
@@ -142,6 +147,7 @@ std::string GetTime(long long time)
     return string(buf);
 }
 
+#ifdef _WINDOW_APP_
 void ShowMessageBox(const char *msg)
 {
     extern SDL_Window *g_window;
@@ -174,3 +180,4 @@ int ShowMessageBoxWithButton(const char *msg)
 
     return btn_id;
 }
+#endif

@@ -28,6 +28,7 @@ public:
     History(path _path_);
     History();
     void Add();
+    void Add(std::string msg);
     void Delete(int i);
     void ClearAll();
 };

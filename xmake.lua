@@ -27,6 +27,7 @@ target("FileHistoryManager")
     if is_mode("debug") then 
         add_defines("MY_DEBUG")
     end
+    add_defines("_WINDOW_APP_")
 
     add_packages("libsdl")
     add_deps("imgui", "md5")
@@ -35,6 +36,7 @@ target("FileHistoryManager")
     add_includedirs("third_party/imgui", "third_party/imgui/backends")
 
     add_files("src/*.cpp")
+    add_files("src/window/*.cpp")
 
     after_build(function (target)
                     os.cp("$(projectdir)/res/font/*.ttf", target:targetdir() .. "/res/")
@@ -43,7 +45,21 @@ target("FileHistoryManager")
                     end
                 end
     )
-    
+
+target("FileHistoryManagerConsole")
+    set_kind("binary")
+    if is_mode("debug") then 
+        add_defines("MY_DEBUG")
+    end
+
+    add_packages("libsdl")
+    add_deps("md5")
+
+    add_includedirs("src", "third_party/imgui")
+
+    add_files("src/history.cpp", "src/util.cpp")
+    add_files("src/console/*.cpp")
+
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
