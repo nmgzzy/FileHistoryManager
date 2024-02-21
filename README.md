@@ -2,7 +2,7 @@
 
 为了方便帮助不会使用Git的人备份文档并管理历史记录，编写了该工具。
 
-![](file:///C:/Users/Admin/Desktop/FileHistoryManager/image/Snipaste_1.png)
+![](image/Snipaste_1.png)
 
 ## 原理
 
